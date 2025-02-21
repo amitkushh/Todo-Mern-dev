@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function Hero() {
   return (
-    <div className="flex flex-col justify-center items-center gap-8 px-7 py-16">
+    <div className="flex flex-col justify-center items-center gap-8 px-7 py-16 md:py-[90px]">
       <h1 className="text-5xl text-center font-semibold md:text-6xl md:max-w-[800px] leading-[110%] md:leading-[120%]">
         Master Your Day with the Ultimate{" "}
         <span className="text-main shadow-lg">To-Do List!</span>
