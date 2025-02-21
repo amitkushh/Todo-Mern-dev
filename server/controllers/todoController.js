@@ -37,4 +37,12 @@ export const updateTodo = async (req, res) => {
   }
 };
 
-export const deleteTodo = async (req, res) => {};
+export const deleteTodo = async (req, res) => {
+  try {
+    await Todo.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Todo deleted Successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Error occuring in todo deletion" });
+  }
+};
