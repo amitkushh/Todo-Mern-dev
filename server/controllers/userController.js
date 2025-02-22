@@ -50,7 +50,21 @@ export const register = async (req, res) => {
 // Login endpoint --------------
 
 export const login = async (req, res) => {
-  console.log("login");
+  const { email, password } = req.body;
+
+  try {
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const user = await User.findOne({ email }).select("+password");
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+    res.status(200).json({ message: "User logged successfully", user });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "error logging user" });
+  }
 };
 
 // Logout endpoint --------------
