@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import generateTokenAndSaveInCookies from "../jwt/token.js";
 
 const userSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -37,9 +38,10 @@ export const register = async (req, res) => {
     await newUser.save();
 
     if (newUser) {
+      const token = await generateTokenAndSaveInCookies(newUser._id, res);
       return res
         .status(200)
-        .json({ message: "user regestered successfully", newUser });
+        .json({ message: "user regestered successfully", newUser, token });
     }
   } catch (error) {
     console.log(error);
@@ -60,7 +62,9 @@ export const login = async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
-    res.status(200).json({ message: "User logged successfully", user });
+    const token = await generateTokenAndSaveInCookies(user._id, res);
+
+    res.status(200).json({ message: "User logged successfully", user, token });
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: "error logging user" });
@@ -70,5 +74,13 @@ export const login = async (req, res) => {
 // Logout endpoint --------------
 
 export const logout = async (req, res) => {
-  console.log("logout");
+  try {
+    res.clearCookie("jwt", {
+      path: "/",
+    });
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error logging out user" });
+  }
 };
